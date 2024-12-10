@@ -21,40 +21,35 @@ const Cart = () => {
     setLoading(true);
     try {
       const lineItems = Object.values(cartDetails).map(item => ({
-        price: item.sku, // Get the price ID from the item
+        price: item.sku,
         quantity: item.quantity,
       }));
-  
+
       if (lineItems.length === 0) {
         alert('Your cart is empty!');
         setLoading(false);
         return;
       }
-  
-      // Determine the base URL dynamically
-      const baseUrl = process.env.IS_NETLIFY
-      ? '/.netlify/functions'
-      : '/api';
-  
-      // Call the appropriate serverless function
-      const response = await fetch(`${baseUrl}/createCheckoutSession`, {
+
+      const response = await fetch('/.netlify/functions/createCheckoutSession', {
         method: 'POST',
-        body: JSON.stringify({ items: lineItems }), // Pass line items
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ items: lineItems }),
       });
-  
+
       const session = await response.json();
-  
-      // Redirect to checkout with sessionId
+
       if (session.sessionId) {
-        if (typeof window !== "undefined") {
+        if (typeof window !== 'undefined') {
           const stripe = window.Stripe(process.env.GATSBY_STRIPE_PUBLISHABLE_KEY);
           await stripe.redirectToCheckout({ sessionId: session.sessionId });
+        } else {
+          console.error('Stripe.js not loaded');
         }
       } else {
-        console.error('No sessionId returned.');
+        console.error('Checkout session creation failed');
       }
     } catch (error) {
       console.error('Error during checkout:', error);
@@ -62,7 +57,6 @@ const Cart = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div>
