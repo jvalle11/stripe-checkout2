@@ -26,7 +26,7 @@ const CartExample = () => {
       </h2>
       <CartProvider
         mode="client-only"
-        stripe={process.env.GATSBY_STRIPE_PUBLISHABLE_KEY}
+        stripe={stripePromise}
         successUrl={successUrl}
         cancelUrl={cancelUrl}
         currency="USD"
