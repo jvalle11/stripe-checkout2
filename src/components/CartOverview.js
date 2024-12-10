@@ -32,8 +32,9 @@ const Cart = () => {
       }
   
       // Determine the base URL dynamically
-      const baseUrl =
-        process.env.NETLIFY ? '/.netlify/functions' : '/api';
+      const baseUrl = process.env.IS_NETLIFY
+      ? '/.netlify/functions'
+      : '/api';
   
       // Call the appropriate serverless function
       const response = await fetch(`${baseUrl}/createCheckoutSession`, {
